@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { Storefront } from './components/Storefront';
 import { SupplierPortal } from './components/SupplierPortal';
 import { CartModal } from './components/CartModal';
+import { ShippingCalculator } from './components/ShippingCalculator';
 import { X, ShieldCheck, Truck, ShoppingCart, Check, Star } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -107,11 +108,16 @@ const MainContent = () => {
               <h2 style={{ fontSize: '1.5rem', color: '#fff', fontWeight: 800, marginBottom: '12px' }}>{quickViewProduct.title}</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}>{quickViewProduct.description}</p>
               
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-cyan)', marginBottom: '20px' }}>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-cyan)', marginBottom: '12px' }}>
                 ${quickViewProduct.price.toLocaleString('es-AR')} ARS
               </div>
 
-              <div style={{ marginTop: 'auto', display: 'flex', gap: '12px' }}>
+              <ShippingCalculator 
+                wholesalePrice={quickViewProduct.wholesalePrice} 
+                suggestedPrice={quickViewProduct.price} 
+              />
+
+              <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
                 <button 
                   onClick={() => { addToCart(quickViewProduct); setQuickViewProduct(null); setIsCartOpen(true); }}
                   className="btn-primary"
