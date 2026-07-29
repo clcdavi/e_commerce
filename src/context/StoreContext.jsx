@@ -11,10 +11,15 @@ export const StoreProvider = ({ children }) => {
   });
 
   // Catálogo de Productos Aprobados por el Admin
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('md_products');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-  });
+  const [products, setProducts] = useState([]);
+
+  // Fetch productos desde el backend al cargar la app
+  useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => setProducts(data))
+      .catch(err => console.error("Error fetching products", err));
+  }, []);
 
   // Carrito de Compras
   const [cart, setCart] = useState(() => {
@@ -38,9 +43,7 @@ export const StoreProvider = ({ children }) => {
     else localStorage.removeItem('md_user');
   }, [user]);
 
-  useEffect(() => {
-    localStorage.setItem('md_products', JSON.stringify(products));
-  }, [products]);
+
 
   useEffect(() => {
     localStorage.setItem('md_cart', JSON.stringify(cart));
@@ -94,12 +97,29 @@ export const StoreProvider = ({ children }) => {
   };
 
   // Funciones de Gestión Admin (Agregar/Eliminar Productos del Catálogo Oficial)
-  const addAdminProduct = (newProduct) => {
-    setProducts(prev => [newProduct, ...prev]);
+  const addAdminProduct = async (newProduct) => {
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProduct)
+      });
+      const data = await res.json();
+      setProducts(prev => [data, ...prev]);
+    } catch (error) {
+      console.error("Error adding product", error);
+      alert("Error al crear el producto");
+    }
   };
 
-  const removeAdminProduct = (productId) => {
-    setProducts(prev => prev.filter(p => p.id !== productId));
+  const removeAdminProduct = async (productId) => {
+    try {
+      await fetch(`/api/products/${productId}`, { method: 'DELETE' });
+      setProducts(prev => prev.filter(p => p.id !== productId));
+    } catch (error) {
+      console.error("Error deleting product", error);
+      alert("Error al eliminar el producto");
+    }
   };
 
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);

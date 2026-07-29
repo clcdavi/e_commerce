@@ -25,21 +25,13 @@ export const AdminDashboard = () => {
     const wholesaleNum = Number(form.wholesalePrice) || Math.round(priceNum * 0.65);
 
     const newProd = {
-      id: `prod-${Date.now()}`,
       title: form.title,
       description: form.description || 'Producto verificado y aprobado oficialmente en catálogo.',
       price: priceNum,
-      wholesalePrice: wholesaleNum,
+      supplier_cost: wholesaleNum,
       category: form.category,
       image: form.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&q=80',
-      stock: Number(form.stock) || 20,
-      supplier: {
-        id: `supp-${Date.now()}`,
-        name: form.supplierName,
-        location: 'Buenos Aires',
-        dispatchTime: form.dispatchTime,
-        rating: 5.0
-      }
+      stock: Number(form.stock) || 20
     };
 
     addAdminProduct(newProd);
@@ -153,7 +145,7 @@ export const AdminDashboard = () => {
                     ${product.price.toLocaleString('es-AR')} ARS
                   </div>
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                    Proveedor: {product.supplier?.name} | Stock: {product.stock} u.
+                    Costo Prov: ${Number(product.supplier_cost).toLocaleString('es-AR')} | Stock: {product.stock} u.
                   </div>
                 </div>
 

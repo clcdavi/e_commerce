@@ -4,6 +4,7 @@ import { MercadoPagoConfig, Preference } from 'mercadopago';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { pool, initDb } from './db.js';
 
 dotenv.config();
 
@@ -87,6 +88,42 @@ app.post('/api/webhooks/mercadopago', (req, res) => {
   res.sendStatus(200);
 });
 
+// --- API de Productos ---
+app.get('/api/products', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM products ORDER BY created_at DESC');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: 'Error al obtener productos' });
+  }
+});
+
+app.post('/api/products', async (req, res) => {
+  try {
+    const { title, description, price, image, category, stock, supplier_cost } = req.body;
+    const { rows } = await pool.query(
+      'INSERT INTO products (title, description, price, image, category, stock, supplier_cost) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [title, description, price, image, category, stock, supplier_cost]
+    );
+    res.status(201).json(rows[0]);
+  } catch (error) {
+    console.error('Error creating product:', error);
+    res.status(500).json({ error: 'Error al crear producto' });
+  }
+});
+
+app.delete('/api/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query('DELETE FROM products WHERE id = $1', [id]);
+    res.json({ message: 'Producto eliminado' });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    res.status(500).json({ error: 'Error al eliminar producto' });
+  }
+});
+
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '../dist')));
 
@@ -95,6 +132,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await initDb();
   console.log(`🚀 Servidor Backend e-Commerce Dropshipping corriendo en puerto ${PORT}`);
 });
