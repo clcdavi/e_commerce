@@ -35,18 +35,18 @@ export const Storefront = ({ onQuickView, onOpenAuth }) => {
       }}>
         <div style={{ maxWidth: '640px', zIndex: 2 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '20px', background: 'rgba(6, 182, 212, 0.12)', border: '1px solid rgba(6, 182, 212, 0.3)', color: 'var(--accent-cyan)', fontSize: '0.82rem', fontWeight: 700, marginBottom: '20px' }}>
-            <Zap size={14} /> Red Dropshipping Directa Argentina
+            <Zap size={14} /> ⚡ Ofertas Exclusivas con Envío a Todo el País
           </div>
 
           <h2 style={{ fontSize: '2.8rem', fontWeight: 800, lineHeight: 1.15, color: '#fff', marginBottom: '20px', letterSpacing: '-1px' }}>
-            Vende en todo el país <br />
+            Encuentra los mejores productos <br />
             <span style={{ background: 'linear-gradient(90deg, var(--accent-blue), var(--accent-cyan))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              sin costo de inventario
+              al mejor precio garantizado
             </span>
           </h2>
 
           <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', marginBottom: '32px', lineHeight: 1.6 }}>
-            Conectamos tiendas online con los principales proveedores e importadores locales. Despachos rápidos en 24/48hs a través de Andreani, OCA y Correo Argentino.
+            Explora las últimas tendencias en tecnología, hogar y moda. Paga de forma 100% segura con MercadoPago en cuotas y recibe tu pedido en 24/48hs donde quieras.
           </p>
 
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
@@ -58,7 +58,7 @@ export const Storefront = ({ onQuickView, onOpenAuth }) => {
               }}
               style={{ padding: '14px 28px', fontSize: '1rem' }}
             >
-              Explorar Catálogo Nacional <ArrowRight size={18} />
+              Ver Productos y Ofertas <ArrowRight size={18} />
             </button>
           </div>
         </div>
