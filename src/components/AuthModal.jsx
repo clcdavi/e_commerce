@@ -15,11 +15,13 @@ export const AuthModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulación de login/registro exitoso
+    const isAdmin = formData.email.toLowerCase().includes('admin') || formData.email.toLowerCase() === 'admin@mercadodrop.com.ar';
+    
     const userPayload = {
       id: `usr-${Date.now()}`,
       name: formData.name || formData.email.split('@')[0],
       email: formData.email,
+      role: isAdmin ? 'admin' : 'buyer',
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.email}`
     };
 

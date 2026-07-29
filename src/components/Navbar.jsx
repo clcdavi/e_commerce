@@ -98,33 +98,37 @@ export const Navbar = ({ onOpenCart, onOpenAuth }) => {
 
         {/* Acciones de Usuario y Carrito */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          {/* Botón de Acceso Admin */}
-          <button
-            onClick={() => setActiveTab(activeTab === 'admin' ? 'storefront' : 'admin')}
-            style={{
-              background: activeTab === 'admin' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255,255,255,0.04)',
-              border: activeTab === 'admin' ? '1px solid var(--accent-purple)' : '1px solid var(--border-glass)',
-              color: activeTab === 'admin' ? 'var(--accent-purple)' : 'var(--text-muted)',
-              padding: '8px 12px',
-              borderRadius: '8px',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <Lock size={14} color="var(--accent-purple)" /> Panel Admin
-          </button>
-
           {/* User Profile / Login */}
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {/* Pestañas para Administrador únicamente */}
+              {user.role === 'admin' && (
+                <button
+                  onClick={() => setActiveTab(activeTab === 'admin' ? 'storefront' : 'admin')}
+                  style={{
+                    background: activeTab === 'admin' ? 'rgba(139, 92, 246, 0.25)' : 'rgba(139, 92, 246, 0.1)',
+                    border: '1px solid var(--accent-purple)',
+                    color: '#fff',
+                    padding: '6px 12px',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Lock size={13} color="var(--accent-purple)" /> Panel Admin
+                </button>
+              )}
+
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '6px 12px', borderRadius: '20px', border: '1px solid var(--border-glass)' }}>
                 <img src={user.avatar} alt={user.name} style={{ width: '24px', height: '24px', borderRadius: '50%' }} />
                 <span style={{ fontSize: '0.85rem', color: '#fff', fontWeight: 600 }}>{user.name}</span>
+                {user.role === 'admin' && <span className="badge badge-info" style={{ fontSize: '0.65rem', padding: '2px 6px' }}>Admin</span>}
               </div>
+              
               <button 
                 onClick={logout} 
                 title="Cerrar Sesión" 
