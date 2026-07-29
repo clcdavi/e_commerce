@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
+import { TrustSection } from './TrustSection';
+import { Newsletter } from './Newsletter';
 import { Truck, ShieldCheck, Zap, ArrowRight, Star, RefreshCw } from 'lucide-react';
 
 export const Storefront = ({ onQuickView, onOpenAuth }) => {
@@ -96,12 +98,15 @@ export const Storefront = ({ onQuickView, onOpenAuth }) => {
         </div>
       </section>
 
+      {/* SECCIÓN DE CONFIANZA Y GARANTÍAS */}
+      <TrustSection />
+
       {/* CATÁLOGO DE PRODUCTOS */}
       <section id="catalog">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <div>
             <h3 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff' }}>Catálogo de Productos</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Productos con stock en depósito listos para enviar</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Productos disponibles con envío inmediato a todo el país</p>
           </div>
 
           {/* Filtros por Categoría */}
@@ -145,6 +150,9 @@ export const Storefront = ({ onQuickView, onOpenAuth }) => {
           </div>
         )}
       </section>
+
+      {/* SECCIÓN NEWSLETTER CON REGALO DE $5.000 */}
+      <Newsletter />
     </div>
   );
 };
