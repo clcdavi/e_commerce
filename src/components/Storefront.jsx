@@ -3,7 +3,7 @@ import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
 import { Truck, ShieldCheck, Zap, ArrowRight, Star, RefreshCw } from 'lucide-react';
 
-export const Storefront = ({ onQuickView }) => {
+export const Storefront = ({ onQuickView, onOpenAuth }) => {
   const { products, searchTerm, categoryFilter, setCategoryFilter } = useStore();
 
   const categories = ['Todas', 'Electrónica', 'Hogar y Cocina', 'Moda y Equipaje'];
@@ -140,7 +140,7 @@ export const Storefront = ({ onQuickView }) => {
             gap: '24px'
           }}>
             {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} onQuickView={onQuickView} />
+              <ProductCard key={product.id} product={product} onQuickView={onQuickView} onOpenAuth={onOpenAuth} />
             ))}
           </div>
         )}

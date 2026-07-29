@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { ShoppingCart, Eye, Star, Truck, ShieldCheck, Tag, Check } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
-export const ProductCard = ({ product, onQuickView }) => {
-  const { addToCart } = useStore();
+export const ProductCard = ({ product, onQuickView, onOpenAuth }) => {
+  const { addToCart, addProductToMyShop, myShopProducts, user } = useStore();
   const [added, setAdded] = useState(false);
+  const [addedToShop, setAddedToShop] = useState(false);
+
+  const isAlreadyInShop = myShopProducts.some(p => p.id === product.id);
 
   const handleAdd = (e) => {
     e.stopPropagation();
@@ -104,43 +107,77 @@ export const ProductCard = ({ product, onQuickView }) => {
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ARS</span>
           </div>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={handleAdd}
+                style={{
+                  flex: 1,
+                  background: added ? 'var(--accent-green)' : 'linear-gradient(135deg, var(--accent-blue), var(--accent-cyan))',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {added ? <Check size={16} /> : <ShoppingCart size={16} />}
+                {added ? '¡Agregado!' : 'Comprar'}
+              </button>
+              
+              <button
+                onClick={(e) => { e.stopPropagation(); onQuickView(product); }}
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid var(--border-glass)',
+                  color: '#fff',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+                title="Vista Rápida"
+              >
+                <Eye size={16} color="var(--text-muted)" />
+              </button>
+            </div>
+
+            {/* Botón de Vender en Mi Tienda (Dropshipping) */}
             <button
-              onClick={handleAdd}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!user) {
+                  if (onOpenAuth) onOpenAuth();
+                } else {
+                  addProductToMyShop(product);
+                  setAddedToShop(true);
+                  setTimeout(() => setAddedToShop(false), 2000);
+                }
+              }}
               style={{
-                flex: 1,
-                background: added ? 'var(--accent-green)' : 'linear-gradient(135deg, var(--accent-blue), var(--accent-cyan))',
-                color: '#fff',
-                border: 'none',
-                padding: '10px',
+                width: '100%',
+                background: isAlreadyInShop || addedToShop ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                border: isAlreadyInShop || addedToShop ? '1px solid var(--accent-green)' : '1px solid var(--border-glass)',
+                color: isAlreadyInShop || addedToShop ? 'var(--accent-green)' : 'var(--text-main)',
+                padding: '8px',
                 borderRadius: '8px',
-                fontWeight: 700,
-                fontSize: '0.85rem',
+                fontSize: '0.78rem',
+                fontWeight: 600,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '6px',
-                transition: 'all 0.2s ease'
+                gap: '6px'
               }}
             >
-              {added ? <Check size={16} /> : <ShoppingCart size={16} />}
-              {added ? '¡Agregado!' : 'Agregar al Carrito'}
-            </button>
-            
-            <button
-              onClick={(e) => { e.stopPropagation(); onQuickView(product); }}
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid var(--border-glass)',
-                color: '#fff',
-                padding: '10px',
-                borderRadius: '8px',
-                cursor: 'pointer'
-              }}
-              title="Vista Rápida"
-            >
-              <Eye size={16} color="var(--text-muted)" />
+              <Tag size={13} color={isAlreadyInShop || addedToShop ? 'var(--accent-green)' : 'var(--accent-cyan)'} />
+              {isAlreadyInShop ? '✓ En Mi Tienda' : addedToShop ? '¡Añadido a Mi Tienda!' : '+ Vender en Mi Tienda'}
             </button>
           </div>
         </div>

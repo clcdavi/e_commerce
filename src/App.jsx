@@ -3,13 +3,15 @@ import { StoreProvider, useStore } from './context/StoreContext';
 import { Navbar } from './components/Navbar';
 import { Storefront } from './components/Storefront';
 import { SupplierPortal } from './components/SupplierPortal';
+import { MyShop } from './components/MyShop';
 import { CartModal } from './components/CartModal';
+import { AuthModal } from './components/AuthModal';
 import { ShippingCalculator } from './components/ShippingCalculator';
-import { X, ShieldCheck, Truck, ShoppingCart, Check, Star } from 'lucide-react';
+import { X, ShieldCheck, Truck, ShoppingCart, Check, Tag } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { products } = useStore();
-  const totalSales = 452800; // Simulación ventas mes
+  const totalSales = 452800;
   const totalOrders = 14;
 
   return (
@@ -73,23 +75,27 @@ const AdminDashboard = () => {
 };
 
 const MainContent = () => {
-  const { activeTab, addToCart } = useStore();
+  const { activeTab, addToCart, addProductToMyShop, user } = useStore();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar onOpenCart={() => setIsCartOpen(true)} />
+      <Navbar onOpenCart={() => setIsCartOpen(true)} onOpenAuth={() => setIsAuthOpen(true)} />
 
       <main style={{ flex: 1 }}>
         {activeTab === 'storefront' && (
-          <Storefront onQuickView={(product) => setQuickViewProduct(product)} />
+          <Storefront onQuickView={(product) => setQuickViewProduct(product)} onOpenAuth={() => setIsAuthOpen(true)} />
+        )}
+        {activeTab === 'myshop' && (
+          <MyShop onOpenAuth={() => setIsAuthOpen(true)} />
         )}
         {activeTab === 'supplier' && <SupplierPortal />}
         {activeTab === 'admin' && <AdminDashboard />}
       </main>
 
-      {/* Modal de Detalle de Producto / QuickView */}
+      {/* QuickView Modal */}
       {quickViewProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -101,14 +107,14 @@ const MainContent = () => {
               <X size={24} />
             </button>
             
-            <img src={quickViewProduct.image} alt={quickViewProduct.title} style={{ width: '300px', height: '300px', borderRadius: '16px', objectFit: 'cover' }} />
+            <img src={quickViewProduct.image} alt={quickViewProduct.title} style={{ width: '280px', height: '280px', borderRadius: '16px', objectFit: 'cover' }} />
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
               <span className="badge badge-info" style={{ width: 'fit-content', marginBottom: '8px' }}>{quickViewProduct.category}</span>
-              <h2 style={{ fontSize: '1.5rem', color: '#fff', fontWeight: 800, marginBottom: '12px' }}>{quickViewProduct.title}</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}>{quickViewProduct.description}</p>
+              <h2 style={{ fontSize: '1.4rem', color: '#fff', fontWeight: 800, marginBottom: '8px' }}>{quickViewProduct.title}</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '12px' }}>{quickViewProduct.description}</p>
               
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-cyan)', marginBottom: '12px' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--accent-cyan)', marginBottom: '8px' }}>
                 ${quickViewProduct.price.toLocaleString('es-AR')} ARS
               </div>
 
@@ -117,13 +123,38 @@ const MainContent = () => {
                 suggestedPrice={quickViewProduct.price} 
               />
 
-              <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
+              <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
                 <button 
                   onClick={() => { addToCart(quickViewProduct); setQuickViewProduct(null); setIsCartOpen(true); }}
                   className="btn-primary"
-                  style={{ flex: 1, justifyContent: 'center', padding: '14px' }}
+                  style={{ flex: 1, justifyContent: 'center', padding: '12px' }}
                 >
                   <ShoppingCart size={18} /> Comprar Ahora con MercadoPago
+                </button>
+
+                <button 
+                  onClick={() => {
+                    if (!user) setIsAuthOpen(true);
+                    else {
+                      addProductToMyShop(quickViewProduct);
+                      setQuickViewProduct(null);
+                    }
+                  }}
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid var(--border-glass)',
+                    color: '#fff',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontWeight: 600,
+                    fontSize: '0.85rem'
+                  }}
+                >
+                  <Tag size={16} color="var(--accent-cyan)" /> + Vender en Mi Tienda
                 </button>
               </div>
             </div>
@@ -132,8 +163,9 @@ const MainContent = () => {
       )}
 
       <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
 
-      {/* Footer Profesional */}
+      {/* Footer */}
       <footer style={{
         background: '#070a12',
         borderTop: '1px solid var(--border-glass)',
@@ -142,8 +174,8 @@ const MainContent = () => {
         color: 'var(--text-muted)',
         fontSize: '0.85rem'
       }}>
-        <p style={{ marginBottom: '8px' }}>MercadoDrop Argentina © 2026 - Plataforma de Dropshipping Local & e-Commerce Integrado</p>
-        <p style={{ fontSize: '0.78rem' }}>Infraestructura en Oracle Cloud VPS con Docker & Procesamiento Seguro de MercadoPago SDK</p>
+        <p style={{ marginBottom: '8px' }}>MercadoDrop Argentina © 2026 - Plataforma de Compras & Dropshipping</p>
+        <p style={{ fontSize: '0.78rem' }}>Infraestructura Oracle Cloud VPS con Docker & Procesamiento Seguro de MercadoPago SDK</p>
       </footer>
     </div>
   );

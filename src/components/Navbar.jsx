@@ -1,10 +1,199 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Search, ShieldCheck, Truck, PackageCheck, UserCheck, Menu, X, LayoutDashboard, Store } from 'lucide-react';
+import { ShoppingBag, Search, ShieldCheck, Truck, User, LogOut, Store, LayoutDashboard } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
-export const Navbar = ({ onOpenCart }) => {
-  const { cartItemCount, activeTab, setActiveTab, searchTerm, setSearchTerm } = useStore();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+export const Navbar = ({ onOpenCart, onOpenAuth }) => {
+  const { cartItemCount, activeTab, setActiveTab, searchTerm, setSearchTerm, user, logout, myShopProducts } = useStore();
+
+  return (
+    <header style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 100,
+      background: 'rgba(11, 15, 25, 0.88)',
+      backdropFilter: 'blur(16px)',
+      borderBottom: '1px solid var(--border-glass)'
+    }}>
+      {/* Top Banner */}
+      <div style={{
+        background: 'linear-gradient(90deg, #1e293b, #0f172a)',
+        padding: '6px 16px',
+        fontSize: '0.8rem',
+        color: 'var(--text-muted)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderBottom: '1px solid rgba(255,255,255,0.05)'
+      }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <Truck size={14} color="var(--accent-cyan)" /> Envíos en 24/48hs a todo Argentina
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <ShieldCheck size={14} color="var(--accent-green)" /> Pagos 100% Protegidos con MercadoPago
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <button 
+            onClick={() => setActiveTab(activeTab === 'supplier' ? 'storefront' : 'supplier')}
+            style={{ background: 'none', border: 'none', color: 'var(--accent-cyan)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
+          >
+            {activeTab === 'supplier' ? '← Ir al Catálogo Comprador' : '📦 Soy Proveedor (Publicar Mayorista)'}
+          </button>
+        </div>
+      </div>
+
+      {/* Main Navbar */}
+      <div style={{
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '12px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '24px'
+      }}>
+        {/* Logo */}
+        <div 
+          onClick={() => setActiveTab('storefront')}
+          style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+        >
+          <div style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, var(--accent-blue), var(--accent-cyan))',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 800,
+            fontSize: '1.4rem',
+            color: '#fff',
+            boxShadow: '0 4px 12px rgba(6, 182, 212, 0.4)'
+          }}>
+            M
+          </div>
+          <div>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.5px', color: '#fff', lineHeight: 1 }}>
+              Mercado<span style={{ color: 'var(--accent-cyan)' }}>Drop</span>
+            </h1>
+            <span style={{ fontSize: '0.68rem', color: 'var(--accent-green)', fontWeight: 600 }}>
+              🇦🇷 Compras & Dropshipping
+            </span>
+          </div>
+        </div>
+
+        {/* Buscador Estilo Mercado Libre */}
+        {activeTab === 'storefront' && (
+          <div style={{ flex: 1, maxWidth: '540px', position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Buscar productos en Argentina..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 16px 10px 42px',
+                borderRadius: '24px',
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid var(--border-glass)',
+                color: '#fff',
+                fontSize: '0.9rem',
+                outline: 'none'
+              }}
+            />
+            <Search size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+          </div>
+        )}
+
+        {/* Secciones del Usuario Autenticado */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          {/* Botón Mi Tienda (Dropshipping) */}
+          <button
+            onClick={() => setActiveTab('myshop')}
+            style={{
+              background: activeTab === 'myshop' ? 'rgba(6, 182, 212, 0.2)' : 'rgba(255,255,255,0.04)',
+              border: activeTab === 'myshop' ? '1px solid var(--accent-cyan)' : '1px solid var(--border-glass)',
+              color: activeTab === 'myshop' ? 'var(--accent-cyan)' : '#fff',
+              padding: '8px 14px',
+              borderRadius: '10px',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Store size={16} color="var(--accent-cyan)" />
+            <span>Mi Tienda ({myShopProducts.length})</span>
+          </button>
+
+          {/* User Profile / Login */}
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '6px 12px', borderRadius: '20px', border: '1px solid var(--border-glass)' }}>
+                <img src={user.avatar} alt={user.name} style={{ width: '24px', height: '24px', borderRadius: '50%' }} />
+                <span style={{ fontSize: '0.85rem', color: '#fff', fontWeight: 600 }}>{user.name}</span>
+              </div>
+              <button 
+                onClick={logout} 
+                title="Cerrar Sesión" 
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
+              >
+                <LogOut size={18} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onOpenAuth}
+              className="btn-primary"
+              style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+            >
+              <User size={16} /> Ingresar / Crear Cuenta
+            </button>
+          )}
+
+          {/* Carrito */}
+          <button
+            onClick={onOpenCart}
+            style={{
+              background: 'rgba(59, 130, 246, 0.15)',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+              borderRadius: '10px',
+              padding: '8px 14px',
+              color: '#fff',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontWeight: 700,
+              position: 'relative'
+            }}
+          >
+            <ShoppingBag size={18} color="var(--accent-cyan)" />
+            {cartItemCount > 0 && (
+              <span style={{
+                background: 'var(--accent-cyan)',
+                color: '#000',
+                borderRadius: '50%',
+                width: '18px',
+                height: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.7rem',
+                fontWeight: 800
+              }}>
+                {cartItemCount}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+};
 
   return (
     <header style={{
