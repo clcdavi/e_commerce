@@ -1,9 +1,9 @@
-import React from 'react';
-import { ShoppingBag, Search, ShieldCheck, Truck, User, LogOut, Store, LayoutDashboard } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingBag, Search, ShieldCheck, Truck, User, LogOut, Lock, LayoutDashboard } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
 export const Navbar = ({ onOpenCart, onOpenAuth }) => {
-  const { cartItemCount, activeTab, setActiveTab, searchTerm, setSearchTerm, user, logout, myShopProducts } = useStore();
+  const { cartItemCount, activeTab, setActiveTab, searchTerm, setSearchTerm, user, logout } = useStore();
 
   return (
     <header style={{
@@ -14,7 +14,7 @@ export const Navbar = ({ onOpenCart, onOpenAuth }) => {
       backdropFilter: 'blur(16px)',
       borderBottom: '1px solid var(--border-glass)'
     }}>
-      {/* Top Banner */}
+      {/* Top Banner de Confianza del Comprador */}
       <div style={{
         background: 'linear-gradient(90deg, #1e293b, #0f172a)',
         padding: '6px 16px',
@@ -27,19 +27,11 @@ export const Navbar = ({ onOpenCart, onOpenAuth }) => {
       }}>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            <Truck size={14} color="var(--accent-cyan)" /> Envíos en 24/48hs a todo Argentina
+            <Truck size={14} color="var(--accent-cyan)" /> Envíos rápidos en 24/48hs a todo Argentina
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            <ShieldCheck size={14} color="var(--accent-green)" /> Pagos 100% Protegidos con MercadoPago
+            <ShieldCheck size={14} color="var(--accent-green)" /> Compras 100% Protegidas con MercadoPago
           </span>
-        </div>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <button 
-            onClick={() => setActiveTab(activeTab === 'supplier' ? 'storefront' : 'supplier')}
-            style={{ background: 'none', border: 'none', color: 'var(--accent-cyan)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
-          >
-            {activeTab === 'supplier' ? '← Ir al Catálogo Comprador' : '📦 Soy Proveedor (Publicar Mayorista)'}
-          </button>
         </div>
       </div>
 
@@ -78,46 +70,44 @@ export const Navbar = ({ onOpenCart, onOpenAuth }) => {
               Mercado<span style={{ color: 'var(--accent-cyan)' }}>Drop</span>
             </h1>
             <span style={{ fontSize: '0.68rem', color: 'var(--accent-green)', fontWeight: 600 }}>
-              🇦🇷 Compras & Dropshipping
+              🇦🇷 Tienda Oficial
             </span>
           </div>
         </div>
 
         {/* Buscador Estilo Mercado Libre */}
-        {activeTab === 'storefront' && (
-          <div style={{ flex: 1, maxWidth: '540px', position: 'relative' }}>
-            <input
-              type="text"
-              placeholder="Buscar productos en Argentina..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px 16px 10px 42px',
-                borderRadius: '24px',
-                background: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid var(--border-glass)',
-                color: '#fff',
-                fontSize: '0.9rem',
-                outline: 'none'
-              }}
-            />
-            <Search size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
-          </div>
-        )}
-
-        {/* Secciones del Usuario Autenticado */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          {/* Botón Mi Tienda (Dropshipping) */}
-          <button
-            onClick={() => setActiveTab('myshop')}
+        <div style={{ flex: 1, maxWidth: '540px', position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Buscar productos, tecnología, hogar..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             style={{
-              background: activeTab === 'myshop' ? 'rgba(6, 182, 212, 0.2)' : 'rgba(255,255,255,0.04)',
-              border: activeTab === 'myshop' ? '1px solid var(--accent-cyan)' : '1px solid var(--border-glass)',
-              color: activeTab === 'myshop' ? 'var(--accent-cyan)' : '#fff',
-              padding: '8px 14px',
-              borderRadius: '10px',
-              fontSize: '0.85rem',
+              width: '100%',
+              padding: '10px 16px 10px 42px',
+              borderRadius: '24px',
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid var(--border-glass)',
+              color: '#fff',
+              fontSize: '0.9rem',
+              outline: 'none'
+            }}
+          />
+          <Search size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+        </div>
+
+        {/* Acciones de Usuario y Carrito */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          {/* Botón de Acceso Admin */}
+          <button
+            onClick={() => setActiveTab(activeTab === 'admin' ? 'storefront' : 'admin')}
+            style={{
+              background: activeTab === 'admin' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255,255,255,0.04)',
+              border: activeTab === 'admin' ? '1px solid var(--accent-purple)' : '1px solid var(--border-glass)',
+              color: activeTab === 'admin' ? 'var(--accent-purple)' : 'var(--text-muted)',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              fontSize: '0.8rem',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
@@ -125,8 +115,7 @@ export const Navbar = ({ onOpenCart, onOpenAuth }) => {
               gap: '6px'
             }}
           >
-            <Store size={16} color="var(--accent-cyan)" />
-            <span>Mi Tienda ({myShopProducts.length})</span>
+            <Lock size={14} color="var(--accent-purple)" /> Panel Admin
           </button>
 
           {/* User Profile / Login */}
@@ -154,7 +143,7 @@ export const Navbar = ({ onOpenCart, onOpenAuth }) => {
             </button>
           )}
 
-          {/* Carrito */}
+          {/* Carrito de Compras */}
           <button
             onClick={onOpenCart}
             style={{

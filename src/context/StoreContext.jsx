@@ -4,38 +4,31 @@ import { INITIAL_PRODUCTS } from '../data/mockData';
 const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
-  // Estado de Usuario Autenticado
+  // Usuario Autenticado (Comprador o Admin)
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('md_user');
-    return saved ? JSON.parse(saved) : null; // null | { id, name, email, role: 'buyer' | 'seller' | 'admin' }
+    return saved ? JSON.parse(saved) : null;
   });
 
-  // Lista global de productos
+  // Catálogo de Productos Aprobados por el Admin
   const [products, setProducts] = useState(() => {
     const saved = localStorage.getItem('md_products');
     return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
   });
 
-  // Productos agregados por el Comprador a SU propia tienda para revender (Dropshipping)
-  const [myShopProducts, setMyShopProducts] = useState(() => {
-    const saved = localStorage.getItem('md_myshop');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // Carrito de compras
+  // Carrito de Compras
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem('md_cart');
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Mis compras realizadas (Historial del comprador)
+  // Mis Compras Realizadas (Historial del Comprador)
   const [myOrders, setMyOrders] = useState(() => {
     const saved = localStorage.getItem('md_orders');
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [activeTab, setActiveTab] = useState('storefront'); // 'storefront' | 'myshop' | 'supplier' | 'orders'
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [activeTab, setActiveTab] = useState('storefront'); // 'storefront' | 'admin' | 'orders'
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('Todas');
 
@@ -48,10 +41,6 @@ export const StoreProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('md_products', JSON.stringify(products));
   }, [products]);
-
-  useEffect(() => {
-    localStorage.setItem('md_myshop', JSON.stringify(myShopProducts));
-  }, [myShopProducts]);
 
   useEffect(() => {
     localStorage.setItem('md_cart', JSON.stringify(cart));
@@ -69,17 +58,6 @@ export const StoreProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setActiveTab('storefront');
-  };
-
-  // Dropshipping: Agregar producto de proveedor a Mi Tienda
-  const addProductToMyShop = (product) => {
-    if (!myShopProducts.some(p => p.id === product.id)) {
-      setMyShopProducts(prev => [...prev, product]);
-    }
-  };
-
-  const removeProductFromMyShop = (productId) => {
-    setMyShopProducts(prev => prev.filter(p => p.id !== productId));
   };
 
   // Carrito Functions
@@ -115,12 +93,17 @@ export const StoreProvider = ({ children }) => {
     setMyOrders(prev => [orderData, ...prev]);
   };
 
-  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  const addProduct = (newProduct) => {
+  // Funciones de Gestión Admin (Agregar/Eliminar Productos del Catálogo Oficial)
+  const addAdminProduct = (newProduct) => {
     setProducts(prev => [newProduct, ...prev]);
   };
+
+  const removeAdminProduct = (productId) => {
+    setProducts(prev => prev.filter(p => p.id !== productId));
+  };
+
+  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <StoreContext.Provider value={{
@@ -128,16 +111,11 @@ export const StoreProvider = ({ children }) => {
       login,
       logout,
       products,
-      myShopProducts,
-      addProductToMyShop,
-      removeProductFromMyShop,
       cart,
       myOrders,
       addOrder,
       activeTab,
       setActiveTab,
-      selectedProduct,
-      setSelectedProduct,
       searchTerm,
       setSearchTerm,
       categoryFilter,
@@ -148,7 +126,8 @@ export const StoreProvider = ({ children }) => {
       clearCart,
       cartTotal,
       cartItemCount,
-      addProduct
+      addAdminProduct,
+      removeAdminProduct
     }}>
       {children}
     </StoreContext.Provider>

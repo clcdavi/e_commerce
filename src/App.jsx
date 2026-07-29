@@ -2,80 +2,14 @@ import React, { useState } from 'react';
 import { StoreProvider, useStore } from './context/StoreContext';
 import { Navbar } from './components/Navbar';
 import { Storefront } from './components/Storefront';
-import { SupplierPortal } from './components/SupplierPortal';
-import { MyShop } from './components/MyShop';
+import { AdminDashboard } from './components/AdminDashboard';
 import { CartModal } from './components/CartModal';
 import { AuthModal } from './components/AuthModal';
 import { ShippingCalculator } from './components/ShippingCalculator';
-import { X, ShieldCheck, Truck, ShoppingCart, Check, Tag } from 'lucide-react';
-
-const AdminDashboard = () => {
-  const { products } = useStore();
-  const totalSales = 452800;
-  const totalOrders = 14;
-
-  return (
-    <div style={{ maxWidth: '1100px', margin: '40px auto', padding: '0 20px' }}>
-      <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', marginBottom: '24px' }}>
-        Panel Administrador de la Tienda
-      </h2>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '32px' }}>
-        <div className="glass-panel" style={{ padding: '20px' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Ventas Acumuladas</span>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)', marginTop: '4px' }}>
-            ${totalSales.toLocaleString('es-AR')} ARS
-          </div>
-        </div>
-        <div className="glass-panel" style={{ padding: '20px' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Órdenes de Dropshipping</span>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-blue)', marginTop: '4px' }}>
-            {totalOrders} Pedidos
-          </div>
-        </div>
-        <div className="glass-panel" style={{ padding: '20px' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Integración MercadoPago</span>
-          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-cyan)', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShieldCheck size={20} color="var(--accent-mp)" /> Webhook Activo
-          </div>
-        </div>
-      </div>
-
-      <div className="glass-panel" style={{ padding: '24px' }}>
-        <h3 style={{ fontSize: '1.1rem', color: '#fff', fontWeight: 700, marginBottom: '16px' }}>
-          Inventario y Proveedores Sincronizados
-        </h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--text-main)', fontSize: '0.9rem' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
-              <th style={{ padding: '12px' }}>Producto</th>
-              <th style={{ padding: '12px' }}>Proveedor</th>
-              <th style={{ padding: '12px' }}>Costo Mayorista</th>
-              <th style={{ padding: '12px' }}>PVP Sugerido</th>
-              <th style={{ padding: '12px' }}>Stock</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map(p => (
-              <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <td style={{ padding: '12px', fontWeight: 600 }}>{p.title}</td>
-                <td style={{ padding: '12px', color: 'var(--text-muted)' }}>{p.supplier.name}</td>
-                <td style={{ padding: '12px' }}>${p.wholesalePrice.toLocaleString('es-AR')}</td>
-                <td style={{ padding: '12px', color: 'var(--accent-cyan)', fontWeight: 700 }}>${p.price.toLocaleString('es-AR')}</td>
-                <td style={{ padding: '12px' }}>
-                  <span className="badge badge-info">{p.stock} u.</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
+import { X, ShieldCheck, Truck, ShoppingCart, Check, Star } from 'lucide-react';
 
 const MainContent = () => {
-  const { activeTab, addToCart, addProductToMyShop, user } = useStore();
+  const { activeTab, addToCart } = useStore();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
@@ -88,21 +22,17 @@ const MainContent = () => {
         {activeTab === 'storefront' && (
           <Storefront onQuickView={(product) => setQuickViewProduct(product)} onOpenAuth={() => setIsAuthOpen(true)} />
         )}
-        {activeTab === 'myshop' && (
-          <MyShop onOpenAuth={() => setIsAuthOpen(true)} />
-        )}
-        {activeTab === 'supplier' && <SupplierPortal />}
         {activeTab === 'admin' && <AdminDashboard />}
       </main>
 
-      {/* QuickView Modal */}
+      {/* QuickView Modal Orientado al Comprador */}
       {quickViewProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
           zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
         }}>
-          <div className="glass-panel" style={{ maxWidth: '750px', width: '100%', padding: '32px', position: 'relative', display: 'flex', gap: '32px' }}>
+          <div className="glass-panel" style={{ maxWidth: '720px', width: '100%', padding: '32px', position: 'relative', display: 'flex', gap: '32px' }}>
             <button onClick={() => setQuickViewProduct(null)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>
               <X size={24} />
             </button>
@@ -114,47 +44,21 @@ const MainContent = () => {
               <h2 style={{ fontSize: '1.4rem', color: '#fff', fontWeight: 800, marginBottom: '8px' }}>{quickViewProduct.title}</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '12px' }}>{quickViewProduct.description}</p>
               
-              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--accent-cyan)', marginBottom: '8px' }}>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-cyan)', marginBottom: '12px' }}>
                 ${quickViewProduct.price.toLocaleString('es-AR')} ARS
               </div>
 
-              <ShippingCalculator 
-                wholesalePrice={quickViewProduct.wholesalePrice} 
-                suggestedPrice={quickViewProduct.price} 
-              />
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Truck size={16} color="var(--accent-green)" /> Envíos asegurados a todo el país vía MercadoPago
+              </div>
 
-              <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+              <div style={{ marginTop: 'auto', display: 'flex', gap: '10px' }}>
                 <button 
                   onClick={() => { addToCart(quickViewProduct); setQuickViewProduct(null); setIsCartOpen(true); }}
                   className="btn-primary"
-                  style={{ flex: 1, justifyContent: 'center', padding: '12px' }}
+                  style={{ flex: 1, justifyContent: 'center', padding: '14px', fontSize: '1rem' }}
                 >
-                  <ShoppingCart size={18} /> Comprar Ahora con MercadoPago
-                </button>
-
-                <button 
-                  onClick={() => {
-                    if (!user) setIsAuthOpen(true);
-                    else {
-                      addProductToMyShop(quickViewProduct);
-                      setQuickViewProduct(null);
-                    }
-                  }}
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--border-glass)',
-                    color: '#fff',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontWeight: 600,
-                    fontSize: '0.85rem'
-                  }}
-                >
-                  <Tag size={16} color="var(--accent-cyan)" /> + Vender en Mi Tienda
+                  <ShoppingCart size={18} /> Agregar al Carrito & Comprar
                 </button>
               </div>
             </div>
@@ -174,7 +78,7 @@ const MainContent = () => {
         color: 'var(--text-muted)',
         fontSize: '0.85rem'
       }}>
-        <p style={{ marginBottom: '8px' }}>MercadoDrop Argentina © 2026 - Plataforma de Compras & Dropshipping</p>
+        <p style={{ marginBottom: '8px' }}>MercadoDrop Argentina © 2026 - Tienda Oficial e-Commerce</p>
         <p style={{ fontSize: '0.78rem' }}>Infraestructura Oracle Cloud VPS con Docker & Procesamiento Seguro de MercadoPago SDK</p>
       </footer>
     </div>
