@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_ecommerce
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-mercadodrop_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-SecretPasswordArg2026!}
+      POSTGRES_DB: ${DB_NAME:-mercadodrop_db}
+      TZ: America/Argentina/Buenos_Aires
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ecommerce_net
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web_mercadodrop
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${DB_USER:-mercadodrop_user}:${DB_PASSWORD:-SecretPasswordArg2026!}@db:5432/${DB_NAME:-mercadodrop_db}
+      MERCADOPAGO_ACCESS_TOKEN: ${MERCADOPAGO_ACCESS_TOKEN}
+      TZ: America/Argentina/Buenos_Aires
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
+volumes:
+  pgdata:
+
+networks:
+  ecommerce_net:
+    driver: bridge
