@@ -9,7 +9,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-// --- Etapa Final de Ejecución ---
+# --- Etapa Final de Ejecución ---
 FROM node:18-alpine AS runner
 
 WORKDIR /app

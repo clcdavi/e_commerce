@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, User, Mail, Lock, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { useGoogleLogin } from '@react-oauth/google';
 
 export const AuthModal = ({ isOpen, onClose }) => {
   const { login } = useStore();
@@ -9,6 +10,36 @@ export const AuthModal = ({ isOpen, onClose }) => {
     name: '',
     email: '',
     password: ''
+  });
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        }).then(res => res.json());
+        
+        const isAdmin = userInfo.email.toLowerCase().includes('admin') || userInfo.email.toLowerCase() === 'admin@mercadodrop.com.ar';
+        
+        const googleUser = {
+          id: `usr-google-${userInfo.sub}`,
+          name: userInfo.name || userInfo.email.split('@')[0],
+          email: userInfo.email,
+          role: isAdmin ? 'admin' : 'buyer',
+          avatar: userInfo.picture
+        };
+        
+        login(googleUser);
+        onClose();
+      } catch (error) {
+        console.error("Error fetching Google User Info", error);
+        alert("Error al iniciar sesión con Google");
+      }
+    },
+    onError: errorResponse => {
+      console.error(errorResponse);
+      alert("Error al iniciar sesión con Google");
+    }
   });
 
   if (!isOpen) return null;
@@ -60,17 +91,7 @@ export const AuthModal = ({ isOpen, onClose }) => {
           {/* Botón de Autenticación con Google / Gmail */}
           <button
             type="button"
-            onClick={() => {
-              const googleUser = {
-                id: `usr-google-${Date.now()}`,
-                name: 'Usuario Google',
-                email: 'usuario.gmail@gmail.com',
-                role: 'buyer',
-                avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
-              };
-              login(googleUser);
-              onClose();
-            }}
+            onClick={() => handleGoogleLogin()}
             style={{
               width: '100%',
               padding: '11px',
